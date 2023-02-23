@@ -1,0 +1,126 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+entity feu_pieton is
+  port(
+    clk       : in  std_logic;
+    resetn    : in  std_logic;
+    p         : in  std_logic;
+    R         : out std_logic;
+    O         : out std_logic;
+    V         : out std_logic;
+    b         : out std_logic
+
+  );
+end entity;
+
+
+architecture rtl of feu_pieton is
+  signal k1	: std_logic;
+signal k2	: std_logic;
+signal kp	: std_logic;
+  signal cmd	: std_logic;
+  signal reg10        : std_logic_vector (28 downto 0);
+  signal next_reg10   : std_logic_vector (28 downto 0);
+  signal sup10       : std_logic;
+  signal reg15        : std_logic_vector (29 downto 0);
+  signal next_reg15   : std_logic_vector (29 downto 0);
+  signal sup15       : std_logic;
+  signal reg2        : std_logic_vector (26 downto 0);
+  signal next_reg2   : std_logic_vector (26 downto 0);
+  signal sup2       : std_logic;
+begin
+
+bp : process(clk,resetn) is
+begin
+if resetn = '0' then
+k2 <= '0';
+elsif rising_edge(clk) then
+k2 <= not(p) ;
+end if;
+end process;
+
+kp <= (p and k2);
+
+bkp : process(clk,resetn) is
+begin
+if resetn = '0' then
+k1 <= '0';
+elsif rising_edge(clk) then
+k1 <= (b and (kp or k1)) ;
+end if;
+end process;
+ 
+begin
+   -- la sortie correspond au registre
+   ctr       <= reg10;
+   
+  -- description du registe
+   process (clk,resetn) is
+   begin
+     if resetn = '0'        then 
+       reg10 <= (others => '0');
+     elsif rising_edge(clk) then 
+       reg10 <= next_reg10;
+     end if;
+   end process;
+
+
+  -- description du comparateur
+  sup10 <= '1' when   unsigned(reg10) >= 500000000-1 
+    else '0'; 
+
+    
+  -- description du multiplexeur et de l'incrementeur
+  next_reg10     <= reg10 when enable_in = '0'          -- memorisation
+      else  (others => '0') when sup10 = '1'       -- remise a 0 (synchrone)
+      else  std_logic_vector(unsigned(reg10)+1);   -- incrementationbegin
+   -- la sortie correspond au registre
+   ctr       <= reg2;
+   
+  -- description du registe
+   process (clk,resetn) is
+   begin
+     if resetn = '0'        then 
+       reg2 <= (others => '0');
+     elsif rising_edge(clk) then 
+       reg2 <= next_reg2;
+     end if;
+   end process;
+
+
+  -- description du comparateur
+  sup2 <= '1' when   unsigned(reg2) >= 1000000000-1 
+    else '0'; 
+
+    
+  -- description du multiplexeur et de l'incrementeur
+  next_reg2     <= reg2 when enable_in = '0'          -- memorisation
+      else  (others => '0') when sup2 = '1'       -- remise a 0 (synchrone)
+      else  std_logic_vector(unsigned(reg2)+1);   -- incrementationbegin
+   -- la sortie correspond au registre
+   ctr       <= reg15;
+   
+  -- description du registe
+   process (clk,resetn) is
+   begin
+     if resetn = '0'        then 
+       reg15 <= (others => '0');
+     elsif rising_edge(clk) then 
+       reg15 <= next_reg15;
+     end if;
+   end process;
+
+
+  -- description du comparateur
+  sup15 <= '1' when   unsigned(reg15) >= 750000000-1 
+    else '0'; 
+
+    
+  -- description du multiplexeur et de l'incrementeur
+  next_reg15     <= reg15 when enable_in = '0'          -- memorisation
+      else  (others => '0') when sup15 = '1'       -- remise a 0 (synchrone)
+      else  std_logic_vector(unsigned(reg15)+1);   -- incrementation
+
+end architecture ;
