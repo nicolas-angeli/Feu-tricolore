@@ -1,0 +1,61 @@
+----------------------------------------
+--  Gestion de feux tricolores
+--   testbench
+----------------------------------------
+-- Creation     : 11/2013, A. Exertier
+-- Modification : 09/2015, A. Exertier
+----------------------------------------
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+entity tb_feu_pieton is
+end entity;
+
+
+architecture testbench of tb_feu_pieton is
+  constant hp      : time := 10 ns;  -- half-period
+  constant per     : time := 2*hp;   -- period
+  signal clk       : std_logic:='0';
+  signal resetn    : std_logic;
+  signal p         : std_logic;
+    
+
+  
+begin
+  clk       <= not clk after hp;
+
+  process is
+  begin
+    resetn <= '0';
+    p <= '0';
+    wait for per;
+    p <= '1';
+    wait for 5000000*per;
+    p <= '0';
+    wait for 1000000*per;
+    p <= '0';
+    wait for 7500000*per;
+    p <= '0';
+    wait for (5000000-1)*per;s
+    p <= '1';
+    wait for 15000000*per;
+    p <= '0';
+    wait for 7500000*per;
+    p <= '0';
+    
+    
+    --
+    wait;
+  end process;
+  
+  dut : entity work.feu_pieton  
+    port map(
+      clk       => clk    ,
+      resetn    => resetn ,
+      p         => p     
+      
+    );
+
+end architecture ;
