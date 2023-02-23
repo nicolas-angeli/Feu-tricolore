@@ -1,8 +1,0 @@
-
-State Machine - |demo_feu_pieton|feu_pieton:dut|fsm_feu_pieton:ctrl_part|current_state
-Name current_state.Rouge current_state.Orange current_state.Vertp current_state.Vert10 current_state.Vert 
-current_state.Vert 0 0 0 0 0 
-current_state.Vert10 0 0 0 1 1 
-current_state.Vertp 0 0 1 0 1 
-current_state.Orange 0 1 0 0 1 
-current_state.Rouge 1 0 0 0 1 
